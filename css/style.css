@@ -1,4 +1,5 @@
-*{margin:0;padding:0;box-sizing:border-box}
+/* ── RESET ── */
+*{ margin:0; padding:0; box-sizing:border-box; }
 
 body{
   font-family:'Lekton',monospace;
@@ -27,29 +28,32 @@ body{
   height:calc(100vh - 120px);
 }
 
-.grid a,.about-cell{
+.grid a, .about-cell{
   display:block;
   overflow:hidden;
 }
 
 .grid img{
-  width:100%;
-  height:100%;
+  width:100%; height:100%;
   object-fit:cover;
   display:block;
-  border:0;
   transition:opacity .2s;
 }
 
-.grid a:hover img{
-  opacity:.85;
+.grid a:hover img{ opacity:.85; }
+
+/* ── ABOUT ── */
+.about{ min-height:100vh; padding-bottom:100px; }
+
+.about-content{
+  padding:30px;
+  max-width:800px;
+  line-height:1.7;
+  color:#000;
+  font-size:clamp(16px,2vw,22px);
 }
 
-.about-cell{
-  position:relative;
-}
-
-/* ── RED DOT (fixed, all pages) ── */
+/* ── RED DOT (fixa em todas as páginas) ── */
 .red-dot{
   position:fixed;
   right:35px;
@@ -68,40 +72,15 @@ body{
   background:#ff2222;
 }
 
-/* ── ABOUT ── */
-.about{
-  min-height:100vh;
-  padding-bottom:80px;
+/* ══════════════════════════════════
+   PDF PAGE
+══════════════════════════════════ */
+body.pdf-page{
+  overflow-x:hidden;
+  background:#1f00e8;
 }
 
-.about-content{
-  padding:30px;
-  max-width:800px;
-  line-height:1.7;
-  color:#000;
-  font-size:clamp(16px,2vw,22px);
-}
-
-/* ── PDF PAGE ── */
-.pdf-page{
-  overflow:hidden;
-}
-
-.book-wrapper{
-  position:relative;
-  width:100vw;
-  height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-#book{
-  width:90vw;
-  height:92vh;
-}
-
-/* ── LOADING ── */
+/* ── loading ── */
 #loading{
   position:fixed;
   inset:0;
@@ -109,47 +88,78 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
-  z-index:9000;
+  z-index:8000;
   font-family:'Lekton',monospace;
-  font-size:clamp(24px,4vw,48px);
-  letter-spacing:.3em;
+  font-size:clamp(22px,4vw,48px);
+  letter-spacing:.35em;
   color:#000;
 }
 
-/* ── ZOOM CONTROLS ── */
-.zoom-controls{
+/* ── barra de controles (topo) ── */
+#pdf-bar{
   position:fixed;
-  left:30px;
-  bottom:30px;
+  top:0; left:0; right:0;
+  height:52px;
+  background:#1f00e8;
   display:flex;
-  gap:10px;
-  z-index:9999;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  z-index:7000;
+  border-bottom:2px solid #000;
 }
 
-.zoom-btn{
-  width:44px;
-  height:44px;
-  border-radius:50%;
-  border:none;
+#page-info{
+  font-family:'Lekton',monospace;
+  font-size:15px;
+  letter-spacing:.12em;
+  color:#000;
+  min-width:70px;
+  text-align:center;
+}
+
+.pdf-btn{
   background:#000;
   color:#1f00e8;
+  border:none;
   font-family:'Lekton',monospace;
-  font-size:24px;
+  font-size:20px;
   font-weight:700;
+  width:36px;
+  height:36px;
+  border-radius:50%;
   cursor:pointer;
   display:flex;
   align-items:center;
   justify-content:center;
-  transition:transform .15s, background .15s;
+  transition:transform .15s, opacity .15s;
   line-height:1;
 }
 
-.zoom-btn:hover{
-  transform:scale(1.1);
-  background:#222;
+.pdf-btn:hover:not(:disabled){ transform:scale(1.1); }
+.pdf-btn:disabled{ opacity:.3; cursor:default; }
+
+/* ── área de scroll com as páginas ── */
+#viewer{
+  display:none;            /* escondido até carregar */
+  padding-top:68px;        /* espaço para a barra */
+  padding-bottom:80px;
 }
 
-/* ── RESPONSIVE ── */
+.pdf-page-wrap{
+  display:flex;
+  justify-content:center;
+  padding:12px 16px;
+}
+
+.pdf-page-wrap canvas{
+  display:block;
+  box-shadow:0 4px 24px rgba(0,0,0,.5);
+  background:#fff;
+  max-width:100%;
+}
+
+/* ── RESPONSIVO ── */
 @media(max-width:768px){
   .logo{
     font-size:clamp(22px,7vw,34px);
@@ -163,7 +173,7 @@ body{
     height:auto;
   }
 
-  .grid a,.about-cell{
+  .grid a, .about-cell{
     aspect-ratio:1/1;
   }
 
@@ -174,130 +184,18 @@ body{
     height:44px;
   }
 
-  .zoom-controls{
-    left:20px;
-    bottom:20px;
-  }
+  #pdf-bar{ gap:10px; height:48px; }
+  .pdf-btn{ width:32px; height:32px; font-size:17px; }
+  #page-info{ font-size:13px; }
 
-  .zoom-btn{
-    width:38px;
-    height:38px;
-    font-size:20px;
-  }
-
-  #book{
-    width:98vw;
-    height:90vh;
-  }
+  .pdf-page-wrap{ padding:8px 6px; }
 }
 
 @media(max-width:480px){
   .logo{
-    font-size:clamp(18px,6vw,26px);
+    font-size:clamp(16px,6vw,24px);
     letter-spacing:.1em;
-    height:56px;
-    line-height:56px;
+    height:54px;
+    line-height:54px;
   }
-
-  .grid{
-    grid-template-columns:repeat(2,1fr);
-    height:auto;
-  }
-}
-
-
-/* ── PDF VIEWER ── */
-.pdf-viewer{
-  width:100vw;
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:0;
-}
-
-.pdf-scroll{
-  flex:1;
-  width:100%;
-  overflow:auto;
-  display:flex;
-  align-items:flex-start;
-  justify-content:center;
-  padding:16px 16px 0;
-}
-
-#pdf-canvas{
-  display:block;
-  box-shadow:0 4px 32px rgba(0,0,0,.45);
-  background:#fff;
-  max-width:100%;
-}
-
-/* ── PAGE CONTROLS ── */
-.pdf-controls{
-  display:flex;
-  align-items:center;
-  gap:18px;
-  padding:10px 0 8px;
-  font-family:'Lekton',monospace;
-  font-size:16px;
-  color:#000;
-  letter-spacing:.1em;
-}
-
-.pdf-btn{
-  background:#000;
-  color:#1f00e8;
-  border:none;
-  font-family:'Lekton',monospace;
-  font-size:20px;
-  font-weight:700;
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  transition:transform .15s, opacity .15s;
-}
-
-.pdf-btn:hover:not(:disabled){ transform:scale(1.1); }
-.pdf-btn:disabled{ opacity:.3; cursor:default; }
-
-/* ── ZOOM (bottom-left) ── */
-.zoom-controls{
-  position:fixed;
-  left:30px;
-  bottom:30px;
-  display:flex;
-  gap:10px;
-  z-index:9999;
-}
-
-.zoom-btn{
-  width:44px;
-  height:44px;
-  border-radius:50%;
-  border:none;
-  background:#000;
-  color:#1f00e8;
-  font-family:'Lekton',monospace;
-  font-size:24px;
-  font-weight:700;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  transition:transform .15s;
-  line-height:1;
-}
-
-.zoom-btn:hover{ transform:scale(1.1); }
-
-@media(max-width:768px){
-  .zoom-controls{ left:16px; bottom:16px; }
-  .zoom-btn{ width:38px; height:38px; font-size:20px; }
-  .pdf-scroll{ padding:10px 8px 0; }
 }

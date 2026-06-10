@@ -10,27 +10,181 @@
 </head>
 <body class="pdf-page">
 
-<div id="loading">CARREGANDO...</div>
+  <!-- tela de carregamento -->
+  <div id="loading">CARREGANDO...</div>
 
-<div class="pdf-viewer">
-  <div class="pdf-scroll">
-    <canvas id="pdf-canvas"></canvas>
+  <!-- área de scroll com todas as páginas -->
+  <div id="viewer"></div>
+
+  <!-- barra de controles fixa no topo -->
+  <div id="pdf-bar">
+    <button class="pdf-btn" id="prev-page" title="Página anterior">&#8592;</button>
+    <span id="page-info">— / —</span>
+    <button class="pdf-btn" id="next-page" title="Próxima página">&#8594;</button>
+    <button class="pdf-btn" id="zoom-out" title="Diminuir zoom">−</button>
+    <button class="pdf-btn" id="zoom-in"  title="Aumentar zoom">+</button>
   </div>
 
-  <div class="pdf-controls">
-    <button class="pdf-btn" id="prev-page" aria-label="Página anterior">&#8592;</button>
-    <span id="page-info"></span>
-    <button class="pdf-btn" id="next-page" aria-label="Próxima página">&#8594;</button>
-  </div>
+  <!-- bola vermelha: vai para home -->
+  <a href="index.html" class="red-dot" aria-label="Início"></a>
 
-  <div class="zoom-controls">
-    <button class="zoom-btn" id="zoom-out" aria-label="Diminuir zoom">−</button>
-    <button class="zoom-btn" id="zoom-in"  aria-label="Aumentar zoom">+</button>
-  </div>
-</div>
+<script>
+(function () {
+  const pdfjsLib = window['pdfjs-dist/build/pdf'];
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-<a href="index.html" class="red-dot" aria-label="Início"></a>
+  const params   = new URLSearchParams(window.location.search);
+  const pdfFile  = params.get('pdf') || 'pdf1.pdf';
 
-<script src="js/flipbook.js"></script>
+  const viewer   = document.getElementById('viewer');
+  const loading  = document.getElementById('loading');
+  const pageInfo = document.getElementById('page-info');
+  const prevBtn  = document.getElementById('prev-page');
+  const nextBtn  = document.getElementById('next-page');
+
+  let pdfDoc    = null;
+  let scale     = fitScale();   // zoom inicial: encaixa na tela
+  let rendering = false;
+
+  /* ── escala que encaixa a página na largura disponível ── */
+  function fitScale() {
+    const availW = window.innerWidth - 32; // padding
+    return Math.min(availW / 595, 1.6);    // 595 = largura A4 em pontos
+  }
+
+  /* ── renderiza uma página no seu canvas ── */
+  async function renderPage(num) {
+    if (rendering) return;
+    rendering = true;
+
+    const canvas  = document.getElementById('page-' + num);
+    const page    = await pdfDoc.getPage(num);
+    const vp      = page.getViewport({ scale: scale * (window.devicePixelRatio || 1) });
+
+    canvas.width  = vp.width;
+    canvas.height = vp.height;
+    canvas.style.width  = (vp.width  / (window.devicePixelRatio || 1)) + 'px';
+    canvas.style.height = (vp.height / (window.devicePixelRatio || 1)) + 'px';
+
+    await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+    rendering = false;
+  }
+
+  /* ── re-renderiza todas as páginas (usado no zoom) ── */
+  async function renderAll() {
+    for (let i = 1; i <= pdfDoc.numPages; i++) {
+      await renderPage(i);
+    }
+  }
+
+  /* ── cria os canvas para todas as páginas ── */
+  async function buildViewer() {
+    for (let i = 1; i <= pdfDoc.numPages; i++) {
+      const wrap   = document.createElement('div');
+      wrap.className = 'pdf-page-wrap';
+      wrap.dataset.page = i;
+
+      const canvas = document.createElement('canvas');
+      canvas.id    = 'page-' + i;
+      wrap.appendChild(canvas);
+      viewer.appendChild(wrap);
+
+      await renderPage(i);
+    }
+
+    loading.style.display = 'none';
+    viewer.style.display  = 'block';
+    updatePageInfo();
+  }
+
+  /* ── qual página está visível no centro da tela ── */
+  function currentPage() {
+    const mid = window.scrollY + window.innerHeight / 2;
+    const wraps = viewer.querySelectorAll('.pdf-page-wrap');
+    let closest = 1;
+    let minDist = Infinity;
+    wraps.forEach(w => {
+      const rect = w.getBoundingClientRect();
+      const absTop = rect.top + window.scrollY;
+      const center = absTop + rect.height / 2;
+      const dist   = Math.abs(center - mid);
+      if (dist < minDist) { minDist = dist; closest = +w.dataset.page; }
+    });
+    return closest;
+  }
+
+  function updatePageInfo() {
+    if (!pdfDoc) return;
+    pageInfo.textContent = currentPage() + ' / ' + pdfDoc.numPages;
+    prevBtn.disabled = currentPage() <= 1;
+    nextBtn.disabled = currentPage() >= pdfDoc.numPages;
+  }
+
+  /* ── scroll suave até uma página ── */
+  function goToPage(num) {
+    const wrap = viewer.querySelector('[data-page="' + num + '"]');
+    if (wrap) wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /* ── botões ── */
+  prevBtn.addEventListener('click', () => {
+    const p = currentPage();
+    if (p > 1) goToPage(p - 1);
+  });
+
+  nextBtn.addEventListener('click', () => {
+    const p = currentPage();
+    if (p < pdfDoc.numPages) goToPage(p + 1);
+  });
+
+  document.getElementById('zoom-in').addEventListener('click', async () => {
+    scale = Math.min(scale + 0.2, 3.0);
+    await renderAll();
+  });
+
+  document.getElementById('zoom-out').addEventListener('click', async () => {
+    scale = Math.max(scale - 0.2, 0.4);
+    await renderAll();
+  });
+
+  /* ── teclado ── */
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      const p = currentPage();
+      if (p < pdfDoc.numPages) goToPage(p + 1);
+    }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      const p = currentPage();
+      if (p > 1) goToPage(p - 1);
+    }
+  });
+
+  /* ── swipe mobile ── */
+  let touchStartY = 0, touchStartX = 0;
+  viewer.addEventListener('touchstart', e => {
+    touchStartY = e.touches[0].clientY;
+    touchStartX = e.touches[0].clientX;
+  }, { passive: true });
+  viewer.addEventListener('touchend', e => {
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+      const p = currentPage();
+      if (dx < 0 && p < pdfDoc.numPages) goToPage(p + 1);
+      if (dx > 0 && p > 1)               goToPage(p - 1);
+    }
+  });
+
+  /* ── atualiza contador ao scrollar ── */
+  viewer.addEventListener('scroll', updatePageInfo, { passive: true });
+  window.addEventListener('scroll', updatePageInfo, { passive: true });
+
+  /* ── init ── */
+  pdfjsLib.getDocument('pdfs/' + pdfFile).promise
+    .then(pdf => { pdfDoc = pdf; return buildViewer(); })
+    .catch(e  => { loading.textContent = 'ERRO AO CARREGAR'; console.error(e); });
+})();
+</script>
 </body>
 </html>
