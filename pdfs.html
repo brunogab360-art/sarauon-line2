@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PDF — SARAUON-LINE</title>
+<link href="https://fonts.googleapis.com/css2?family=Lekton:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.min.js"></script>
+</head>
+<body class="pdf-page">
+
+<!-- Tela de carregamento -->
+<div id="loading">CARREGANDO...</div>
+
+<div class="book-wrapper">
+  <div id="book"></div>
+</div>
+
+<!-- Controles de zoom -->
+<div class="zoom-controls">
+  <button class="zoom-btn" id="zoom-in"  aria-label="Aumentar zoom">+</button>
+  <button class="zoom-btn" id="zoom-out" aria-label="Diminuir zoom">−</button>
+</div>
+
+<!-- bola vermelha: no PDF vai para home -->
+<a href="index.html" class="red-dot" aria-label="Início"></a>
+
+<script src="js/flipbook.js"></script>
+</body>
+</html>

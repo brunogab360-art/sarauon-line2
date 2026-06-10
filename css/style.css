@@ -1,0 +1,206 @@
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  font-family:'Lekton',monospace;
+  background:#1f00e8;
+}
+
+/* ── LOGO ── */
+.logo{
+  display:block;
+  width:100%;
+  height:120px;
+  line-height:120px;
+  text-decoration:none;
+  color:#000;
+  font-size:clamp(42px,6vw,80px);
+  letter-spacing:.45em;
+  white-space:nowrap;
+  overflow:hidden;
+  padding-left:8px;
+}
+
+/* ── HOME GRID ── */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  height:calc(100vh - 120px);
+}
+
+.grid a,.about-cell{
+  display:block;
+  overflow:hidden;
+}
+
+.grid img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  border:0;
+  transition:opacity .2s;
+}
+
+.grid a:hover img{
+  opacity:.85;
+}
+
+.about-cell{
+  position:relative;
+}
+
+/* ── RED DOT (fixed, all pages) ── */
+.red-dot{
+  position:fixed;
+  right:35px;
+  bottom:35px;
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  background:#d61b1b;
+  z-index:9999;
+  display:block;
+  transition:transform .15s, background .15s;
+}
+
+.red-dot:hover{
+  transform:scale(1.1);
+  background:#ff2222;
+}
+
+/* ── ABOUT ── */
+.about{
+  min-height:100vh;
+  padding-bottom:80px;
+}
+
+.about-content{
+  padding:30px;
+  max-width:800px;
+  line-height:1.7;
+  color:#000;
+  font-size:clamp(16px,2vw,22px);
+}
+
+/* ── PDF PAGE ── */
+.pdf-page{
+  overflow:hidden;
+}
+
+.book-wrapper{
+  position:relative;
+  width:100vw;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+#book{
+  width:90vw;
+  height:92vh;
+}
+
+/* ── LOADING ── */
+#loading{
+  position:fixed;
+  inset:0;
+  background:#1f00e8;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9000;
+  font-family:'Lekton',monospace;
+  font-size:clamp(24px,4vw,48px);
+  letter-spacing:.3em;
+  color:#000;
+}
+
+/* ── ZOOM CONTROLS ── */
+.zoom-controls{
+  position:fixed;
+  left:30px;
+  bottom:30px;
+  display:flex;
+  gap:10px;
+  z-index:9999;
+}
+
+.zoom-btn{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  border:none;
+  background:#000;
+  color:#1f00e8;
+  font-family:'Lekton',monospace;
+  font-size:24px;
+  font-weight:700;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:transform .15s, background .15s;
+  line-height:1;
+}
+
+.zoom-btn:hover{
+  transform:scale(1.1);
+  background:#222;
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .logo{
+    font-size:clamp(22px,7vw,34px);
+    letter-spacing:.18em;
+    height:70px;
+    line-height:70px;
+  }
+
+  .grid{
+    grid-template-columns:repeat(2,1fr);
+    height:auto;
+  }
+
+  .grid a,.about-cell{
+    aspect-ratio:1/1;
+  }
+
+  .red-dot{
+    right:20px;
+    bottom:20px;
+    width:44px;
+    height:44px;
+  }
+
+  .zoom-controls{
+    left:20px;
+    bottom:20px;
+  }
+
+  .zoom-btn{
+    width:38px;
+    height:38px;
+    font-size:20px;
+  }
+
+  #book{
+    width:98vw;
+    height:90vh;
+  }
+}
+
+@media(max-width:480px){
+  .logo{
+    font-size:clamp(18px,6vw,26px);
+    letter-spacing:.1em;
+    height:56px;
+    line-height:56px;
+  }
+
+  .grid{
+    grid-template-columns:repeat(2,1fr);
+    height:auto;
+  }
+}
