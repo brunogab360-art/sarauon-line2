@@ -49,8 +49,17 @@ body{
   padding:30px;
   max-width:800px;
   line-height:1.7;
-  color:#000;
+  color:#fff;
   font-size:clamp(16px,2vw,22px);
+}
+
+.about-content p{
+  margin-bottom:1.2em;
+}
+
+.about-content a{
+  color:#fff;
+  text-decoration:underline;
 }
 
 /* ── RED DOT (fixa em todas as páginas) ── */
