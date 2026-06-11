@@ -84,7 +84,7 @@ body.pdf-page{
 #loading{
   position:fixed;
   inset:0;
-  background:#1f00e8;
+  background:#002fa7;
   display:flex;
   align-items:center;
   justify-content:center;
