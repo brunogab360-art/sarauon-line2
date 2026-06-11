@@ -100,7 +100,7 @@ body.pdf-page{
   position:fixed;
   top:0; left:0; right:0;
   height:52px;
-  background:#002FA7;
+  background:#002fa7;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -120,7 +120,7 @@ body.pdf-page{
 
 .pdf-btn{
   background:#000;
-  color:#002FA7;
+  color:#002fa7;
   border:none;
   font-family:'Lekton',monospace;
   font-size:20px;
