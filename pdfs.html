@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PDF — SARAUON-LINE</title>
 <link href="https://fonts.googleapis.com/css2?family=Lekton:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="css/style.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 <body class="pdf-page">
@@ -26,7 +26,7 @@
   </div>
 
   <!-- bola vermelha: vai para home -->
-  <a href="/home" class="red-dot" aria-label="Início"></a>
+  <a href="index.html" class="red-dot" aria-label="Início"></a>
 
 <script>
 (function () {
@@ -34,19 +34,8 @@
   pdfjsLib.GlobalWorkerOptions.workerSrc =
     'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-  const params = new URLSearchParams(window.location.search);
-  const pathEdition = window.location.pathname.match(/\/edicao(\d+)\/?$/);
-  const queryEdition = (params.get('pdf') || '').match(/^pdf(\d+)\.pdf$/i);
-
-  const editionNumber = pathEdition ? pathEdition[1] : (queryEdition ? queryEdition[1] : '1');
-  const pdfFile = 'pdf' + editionNumber + '.pdf';
-
-  // Redireciona o formato antigo para o formato novo:
-  // /pdfs.html?pdf=pdf1.pdf -> /edicao1
-  if (window.location.pathname.endsWith('/pdfs.html') && queryEdition) {
-    window.location.replace('/edicao' + queryEdition[1]);
-    return;
-  }
+  const params   = new URLSearchParams(window.location.search);
+  const pdfFile  = params.get('pdf') || 'pdf1.pdf';
 
   const viewer   = document.getElementById('viewer');
   const loading  = document.getElementById('loading');
@@ -192,7 +181,7 @@
   window.addEventListener('scroll', updatePageInfo, { passive: true });
 
   /* ── init ── */
-  pdfjsLib.getDocument('/pdfs/' + pdfFile).promise
+  pdfjsLib.getDocument('pdfs/' + pdfFile).promise
     .then(pdf => { pdfDoc = pdf; return buildViewer(); })
     .catch(e  => { loading.textContent = 'ERRO AO CARREGAR'; console.error(e); });
 })();
