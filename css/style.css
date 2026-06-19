@@ -24,13 +24,17 @@ body{
 /* ── HOME GRID ── */
 .grid{
   display:grid;
-  grid-template-columns:repeat(4,1fr);
-  height:calc(100vh - 120px);
+  grid-template-columns:repeat(auto-fill, 360px);
+  grid-auto-rows:538px;
+  justify-content:center;
+  height:auto;
 }
 
 .grid a, .about-cell{
   display:block;
   overflow:hidden;
+  width:360px;
+  height:538px;
 }
 
 .grid img{
@@ -178,12 +182,16 @@ body.pdf-page{
   }
 
   .grid{
-    grid-template-columns:repeat(2,1fr);
+    grid-template-columns:repeat(auto-fill, minmax(160px,360px));
+    grid-auto-rows:unset;
+    justify-content:center;
     height:auto;
   }
 
   .grid a, .about-cell{
-    aspect-ratio:1/1;
+    width:100%;
+    height:auto;
+    aspect-ratio:360/538;
   }
 
   .red-dot{
